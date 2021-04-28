@@ -1,6 +1,7 @@
 from scipy.io import wavfile
 import matplotlib.pyplot as plt 
 import numpy as np
+import math
 
 #samplerate, data1 = wavfile.read("input/voice-commands/test/.wav")
 #samplerate, data1 = wavfile.read("input/train_split/đi tới/ditoi_tue_01.wav")
@@ -40,31 +41,42 @@ for i in range(frames):
     E = np.append(E, d)
 E = np.delete(E, 0) # xoa junk value
 
-maxE = max(E)
-minE = min(E)
-E = E / maxE
+for i in range(len(E)):
+    E[i] = np.log10(E[i])
+sum = sum(E)
+x_ngang = (float)(sum / frames)
+
+ox = 0
+for i in range(len(E)) :
+    ox += (E[i] - x_ngang) ** 2
+ox = math.sqrt(ox/frames)
+xnorm = [ ((item - x_ngang) / ox) for item in E ]
+
+
+# maxE = max(E)
+# minE = min(E)
+# E = E / maxE
 
 #nguong_y = 5*100000000 # 5x10^8
-
 draw = []
 m = 0
-nguong_y = 0.5
+nguong_y = 1.5
 
 check = 0
-while (m < len(E) - 3):
-    if(E[m] > nguong_y and check==0) :
+while (m < len(xnorm) - 3):
+    if(xnorm[m] > nguong_y and check==0) :
         a = True
         for i in range(m,m+3) :
-            if (E[i] < nguong_y) :
+            if (xnorm[i] < nguong_y) :
                 a = False
                 break
         if (a == True) :
             draw.append(m)
             check=1
-    elif(E[m] < nguong_y and check==1) :
+    elif(xnorm[m] < nguong_y and check==1) :
         a=True
         for i in range(m,m+3):
-            if (E[i] > nguong_y):
+            if (xnorm[i] > nguong_y):
                 a=False
                 break
         if(a==True):
@@ -76,7 +88,7 @@ print(draw)
 
 ax[1].set_xlabel('index of frames')
 ax[1].set_ylabel('amplitude')         
-ax[1].plot(E[0:frames])
+ax[1].plot(xnorm)
 ax[1].set_title('Năng lượng E')
 ax[1].axhline(y=nguong_y, color='r', linestyle='--')  
 

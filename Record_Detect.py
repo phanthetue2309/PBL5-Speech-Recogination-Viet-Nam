@@ -1,12 +1,15 @@
 import pyaudio
 import wave
 import matplotlib.pyplot as plt
+from scipy.io import wavfile
+import numpy as np
 def getaudiodevices():
     p = pyaudio.PyAudio()
     for i in range(p.get_device_count()):
         print(p.get_device_info_by_index(i).get('name'))
 #getaudiodevices()
 name_file = "test.wav"
+
 def Record(name_file):
     form_1 = pyaudio.paInt16 # 16-bit resolution
     chans = 1 # 1 channel
@@ -48,16 +51,13 @@ def Record(name_file):
     wavefile.writeframes(b''.join(frames))
     wavefile.close()
 
-from scipy.io import wavfile
-import numpy as np
-
 Record(name_file)
 
 #samplerate, data1 = wavfile.read("input/voice-commands/test/.wav")
 samplerate, data1 = wavfile.read(name_file)
 times = np.arange(len(data1))/float(samplerate)
-dt = 1/samplerate
 
+# Solution with 2 channels
 data  = []
 if len(data1.shape) == 2:
     if data1.shape[1] !=  1 :
@@ -67,18 +67,18 @@ else :
     data = data1
 
 frames = (float)((len(data) / samplerate))
+frames = (int)(frames*100)
+
+# Draw audio file 
 fig, ax = plt.subplots(3)
 ax[0].set_title("Tín hiệu ")
 ax[0].set_xlabel('time')
 ax[0].set_ylabel('amplitude') 
 ax[0].plot(times,data)
 
-frames = (int)(frames*100)
-data0 = [i**2 for i in data]
-
-E = np.empty(1, dtype=np.int64)
-
-def Calculate_Energy(E):
+def Calculate_Energy(data, frames):
+    data0 = [i**2 for i in data]
+    E = np.empty(1, dtype=np.int64)
     samplein10 = int(samplerate * 0.01)
     for i in range(frames):
         c = np.empty(1, dtype=np.int64)
@@ -97,12 +97,11 @@ def Detect_Split_Voice(E):
         print("NO VOICE")
     else : 
         E = E / maxE
-        draw = []
-        m = 0
-        nguong_y = 0.2
+        draw = [] 
         new_list = []
+        nguong_y = 0.1
         check = 0
-        while (m < len(E) - 3):
+        for m in range(0,len(E) - 3) :
             if(E[m] > nguong_y and check==0) :
                 a = True
                 for i in range(m,m+3) :
@@ -111,7 +110,7 @@ def Detect_Split_Voice(E):
                         break
                 if (a == True) :
                     draw.append(m)
-                    check=1
+                    check = 1
             elif (E[m] < nguong_y and check==1) :
                 a=True
                 for i in range(m,m+3):
@@ -120,20 +119,20 @@ def Detect_Split_Voice(E):
                         break
                 if(a==True):
                     draw.append(m-1)
-                    check=0
-            m=m+1
+                    check = 0
         print(draw)       
 
-        ax[1].set_xlabel('index of frames')
-        ax[1].set_ylabel('amplitude')         
-        ax[1].plot(E[0:frames])
-        ax[1].set_title('Năng lượng E')
-        ax[1].axhline(y=nguong_y, color='r', linestyle='--')  
+        # ax[1].set_xlabel('index of frames')
+        # ax[1].set_ylabel('amplitude')         
+        # ax[1].plot(E[0:int(frames)])
+        # ax[1].set_title('Năng lượng E')
+        # ax[1].axhline(y=nguong_y, color='r', linestyle='--')  
 
         if (len(draw) >= 3 ):
             print("VOICE DETECT")
             new_list = E[draw[0] : draw[-1]]
             max_length = 50
+
             if (len(new_list) > max_length) :
                 different = len(new_list) - max_length
                 first_part = E[draw[0]:draw[1]]
@@ -155,6 +154,6 @@ def Detect_Split_Voice(E):
         else:
             print("NO VOICE DETECT")
             
-E = Calculate_Energy(E)
+E = Calculate_Energy(data, frames)
 Detect_Split_Voice(E)
 plt.show()
