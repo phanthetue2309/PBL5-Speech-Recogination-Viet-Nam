@@ -1,6 +1,7 @@
 from scipy.io import wavfile
 import matplotlib.pyplot as plt 
 import numpy as np
+import math
 
 #samplerate, data1 = wavfile.read("input/voice-commands/test/.wav")
 #samplerate, data1 = wavfile.read("input/train_split/đi tới/ditoi_tue_01.wav")
@@ -45,10 +46,9 @@ minE = min(E)
 E = E / maxE
 
 #nguong_y = 5*100000000 # 5x10^8
-
 draw = []
 m = 0
-nguong_y = 0.5
+nguong_y = 0.1
 
 check = 0
 while (m < len(E) - 3):
@@ -76,7 +76,7 @@ print(draw)
 
 ax[1].set_xlabel('index of frames')
 ax[1].set_ylabel('amplitude')         
-ax[1].plot(E[0:frames])
+ax[1].plot(E)
 ax[1].set_title('Năng lượng E')
 ax[1].axhline(y=nguong_y, color='r', linestyle='--')  
 
