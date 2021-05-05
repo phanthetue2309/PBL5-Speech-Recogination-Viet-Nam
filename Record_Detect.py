@@ -3,6 +3,7 @@ import wave
 import matplotlib.pyplot as plt
 from scipy.io import wavfile
 import numpy as np
+
 def getaudiodevices():
     p = pyaudio.PyAudio()
     for i in range(p.get_device_count()):
@@ -70,11 +71,7 @@ frames = (float)((len(data) / samplerate))
 frames = (int)(frames*100)
 
 # Draw audio file 
-fig, ax = plt.subplots(3)
-ax[0].set_title("Tín hiệu ")
-ax[0].set_xlabel('time')
-ax[0].set_ylabel('amplitude') 
-ax[0].plot(times,data)
+
 
 def Calculate_Energy(data, frames):
     data0 = [i**2 for i in data]
@@ -110,7 +107,7 @@ def Detect_Split_Voice(E):
                         break
                 if (a == True) :
                     draw.append(m)
-                    check = 1
+                    check = 1  # bắt đầu vào ngưỡng
             elif (E[m] < nguong_y and check==1) :
                 a=True
                 for i in range(m,m+3):
@@ -119,14 +116,8 @@ def Detect_Split_Voice(E):
                         break
                 if(a==True):
                     draw.append(m-1)
-                    check = 0
+                    check = 0   # kết thúc 1 chữ
         print(draw)       
-
-        # ax[1].set_xlabel('index of frames')
-        # ax[1].set_ylabel('amplitude')         
-        # ax[1].plot(E[0:int(frames)])
-        # ax[1].set_title('Năng lượng E')
-        # ax[1].axhline(y=nguong_y, color='r', linestyle='--')  
 
         if (len(draw) >= 3 ):
             print("VOICE DETECT")
@@ -148,12 +139,22 @@ def Detect_Split_Voice(E):
               
             with open("text.txt", "w") as output:
                 output.write(str(new_list))   
-            
-            ax[2].plot(new_list)
+
+            # fig, ax = plt.subplots(3)
+            # ax[0].set_title("Tín hiệu ")
+            # ax[0].set_xlabel('time')
+            # ax[0].set_ylabel('amplitude') 
+            # ax[0].plot(times,data)
+            # ax[1].set_xlabel('index of frames')
+            # ax[1].set_ylabel('amplitude')         
+            # ax[1].plot(E[0:int(frames)])
+            # ax[1].set_title('Năng lượng E')
+            # ax[1].axhline(y=nguong_y, color='r', linestyle='--') 
+            # ax[2].plot(new_list)
         
         else:
             print("NO VOICE DETECT")
             
 E = Calculate_Energy(data, frames)
 Detect_Split_Voice(E)
-plt.show()
+# plt.show()

@@ -14,7 +14,7 @@ classes = ['dừng lại', 'quay phải', 'quay trái', 'sang phải', 'sang tr�
 
 from keras.callbacks import  ModelCheckpoint
 
-model=tf.keras.models.load_model('best_model.h5')
+model=tf.keras.models.load_model('best_model_2.h5')
 model.compile(loss='categorical_crossentropy',optimizer='adam',metrics=['accuracy'])
 mc = ModelCheckpoint('best_model.h5', monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
 
