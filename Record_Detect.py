@@ -4,14 +4,21 @@ import matplotlib.pyplot as plt
 from scipy.io import wavfile
 import numpy as np
 
+
 def getaudiodevices():
+    '''
+    Kiểm tra thông tin thiết bị của micro usb 
+    '''
     p = pyaudio.PyAudio()
-    for i in range(p.get_device_count()):
+    for i in range(p.get_device_count()):   
         print(p.get_device_info_by_index(i).get('name'))
 #getaudiodevices()
 name_file = "test.wav"
-
+shape = 50
 def Record(name_file):
+    '''
+    Hàm Ghi âm giọng nói. 
+    '''
     form_1 = pyaudio.paInt16 # 16-bit resolution
     chans = 1 # 1 channel
     samp_rate = 44100 # 44.1kHz sampling rate
@@ -56,9 +63,9 @@ Record(name_file)
 
 #samplerate, data1 = wavfile.read("input/voice-commands/test/.wav")
 samplerate, data1 = wavfile.read(name_file)
-times = np.arange(len(data1))/float(samplerate)
+times = np.arange(len(data1))/float(samplerate) 
 
-# Solution with 2 channels
+# Nếu có 2 kênh trong đoạn âm thanh thì chuyển 2 kênh về thành 1 kênh 
 data  = []
 if len(data1.shape) == 2:
     if data1.shape[1] !=  1 :
@@ -67,14 +74,18 @@ if len(data1.shape) == 2:
 else : 
     data = data1
 
-frames = (float)((len(data) / samplerate))
+# Chia đoạn âm thanh thành các Frames
+frames = (float)((len(data) / samplerate)) 
 frames = (int)(frames*100)
 
 # Draw audio file 
-
+fig, ax = plt.subplots(3)
 
 def Calculate_Energy(data, frames):
-    data0 = [i**2 for i in data]
+    '''
+    Hàm tính toán năng lượng 
+    '''
+    data0 = [i**2 for i in data] 
     E = np.empty(1, dtype=np.int64)
     samplein10 = int(samplerate * 0.01)
     for i in range(frames):
@@ -84,21 +95,24 @@ def Calculate_Energy(data, frames):
         c = np.delete(c, 0) # xoa junk value
         d = np.sum(c)
         E = np.append(E, d)
-    E = np.delete(E, 0) # xoa junk value
+    E = np.delete(E, 0) # xoa junk value 
     return E
 
 def Detect_Split_Voice(E):
-    nguong_E = 5*100000000 # 5x10^8
+    '''
+    Tìm ngưỡng năng lượng chuẩn bị
+    '''
+    nguong_E = 5*100000000 # 5x10^8 ngưỡng mặc định ứng với mic ghi âm
     maxE = max(E)
     if maxE < nguong_E : 
         print("NO VOICE")
     else : 
-        E = E / maxE
-        draw = [] 
-        new_list = []
-        nguong_y = 0.1
-        check = 0
-        for m in range(0,len(E) - 3) :
+        E = E / maxE  # chuẩn hóa về 0 -> 1 
+        draw = []  # mảng đánh dấy vị trí bắt đầu và kết thúc của tiếng nói
+        new_list = [] # mảng lưu trữ khung tín hiệu tiếng nói
+        nguong_y = 0.1 # ngưỡng chọn 
+        check = 0 # kiểm tra xem là vị trí bắt đầu hay kết thúc
+        for m in range(0,len(E) - 3) : 
             if(E[m] > nguong_y and check==0) :
                 a = True
                 for i in range(m,m+3) :
@@ -119,42 +133,42 @@ def Detect_Split_Voice(E):
                     check = 0   # kết thúc 1 chữ
         print(draw)       
 
-        if (len(draw) >= 3 ):
+        if (len(draw) >= 3 ): # nếu phát hiện được số lượng vị trí khung có tiếng nói thì thực thi
             print("VOICE DETECT")
-            new_list = E[draw[0] : draw[-1]]
-            max_length = 50
+            new_list = E[draw[0] : draw[-1]] # vị trí lên ngưỡng đầu tiên và vị trí xuống ngưỡng cuối cùng
+            max_length = shape # giới hạn khung tiếng nói cắt ra từ file âm thanh
 
-            if (len(new_list) > max_length) :
+            if (len(new_list) > max_length) :  # nếu khung có độ dài lớn hơn thì cắt khoảng lặng 
                 different = len(new_list) - max_length
                 first_part = E[draw[0]:draw[1]]
                 second_part = E[draw[1] + different + 1: draw[-1] + 1 ]    # để có thẻe lấy thêm thằng cuối       
-                new_list =  np.concatenate((first_part, second_part))
+                new_list =  np.concatenate((first_part, second_part))   # kết hợp các khoảng tiếng nói
 
-            elif len(new_list) < max_length :
+            elif len(new_list) < max_length : # nếu khung có độ dài nhỏ hơn thì thêm khoảng lặng 
                 different = len(new_list) - max_length
                 list_choices = E[draw[1] : draw[1] + different ]  # chọn chuỗi muốn thêm
                 first_part = E[draw[0] : draw[1]]
                 second_part = E[draw[1] + different + 1  : draw[-1] + 1]    # để có thẻe lấy thêm thằng cuối    
                 new_list = np.concatenate((first_part,list_choices, second_part))
               
-            with open("text.txt", "w") as output:
+            with open("text.txt", "w") as output: # viết thông tin ra file 
                 output.write(str(new_list))   
 
-            # fig, ax = plt.subplots(3)
-            # ax[0].set_title("Tín hiệu ")
-            # ax[0].set_xlabel('time')
-            # ax[0].set_ylabel('amplitude') 
-            # ax[0].plot(times,data)
-            # ax[1].set_xlabel('index of frames')
-            # ax[1].set_ylabel('amplitude')         
-            # ax[1].plot(E[0:int(frames)])
-            # ax[1].set_title('Năng lượng E')
-            # ax[1].axhline(y=nguong_y, color='r', linestyle='--') 
-            # ax[2].plot(new_list)
+            
+            ax[0].set_title("Tín hiệu ")
+            ax[0].set_xlabel('time')
+            ax[0].set_ylabel('amplitude') 
+            ax[0].plot(times,data)
+            ax[1].set_xlabel('index of frames')
+            ax[1].set_ylabel('amplitude')         
+            ax[1].plot(E[0:int(frames)])
+            ax[1].set_title('Năng lượng E')
+            ax[1].axhline(y=nguong_y, color='r', linestyle='--') 
+            ax[2].plot(new_list)
         
         else:
             print("NO VOICE DETECT")
             
 E = Calculate_Energy(data, frames)
 Detect_Split_Voice(E)
-# plt.show()
+plt.show()
