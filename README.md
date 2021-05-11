@@ -5,7 +5,7 @@ Raspberry đọc tín hiệu âm thanh từ micro, xử lý nhận dạng tiến
 Server (Python) nhận tín hiệu âm thanh từ raspberry, sử dụng module nhận diện mệnh lệnh từ giọng nói và so khớp với các mệnh lệnh cho sẵn trong cơ sở dữ liệu. (Bộ trích đặc trưng) 
 Sau khi quá trình so khớp dữ liệu từ cơ sở dữ liệu thì gửi thông tin cho robot (Bộ so khớp) 
 
-<h1>How to Train : <h1>
+How to Train : 
 
 open anaconda cmd : 
 
@@ -15,7 +15,7 @@ open anaconda cmd :
 
  => python Train.py 
 
-<h1>How to run file : <h1>
+How to run file : 
 
  => open anaconda cmd : 
 
@@ -25,6 +25,6 @@ open anaconda cmd :
 
  => python GUI.py 
 
-<h1>Run File in Visual Studio : <h1>
+Run File in Visual Studio :
 
  => run Detect Voice then Press Predict in GUI APP to know what you have say 
