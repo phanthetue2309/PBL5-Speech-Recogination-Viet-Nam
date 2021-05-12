@@ -1,5 +1,5 @@
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 import socket
 import numpy as np
 import warnings
@@ -13,10 +13,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from scipy.io import wavfile
 
 warnings.filterwarnings("ignore")
-
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 shape = 50
 classes = ['dừng lại','quay phải','quay trái','sang phải','sang trái','đi lui','đi tới']
-model=load_model('best_model/best_model_24_train_test.h5')
+model=load_model('best_model/best_model_29.h5')
 
 # device's IP address
 SERVER_HOST = "0.0.0.0"
@@ -166,7 +166,9 @@ class Ui_Dialog(object):
                     new_list = np.concatenate((first_part,list_choices, second_part))
                 
                 with open("text.txt", "w") as output: # viết thông tin ra file 
-                    output.write(str(new_list))   
+                    output.write(str(new_list))
+
+                self.PredictFile()   
             else:
                 self.labelStatus.setText("NO VOICE DETECT")
 

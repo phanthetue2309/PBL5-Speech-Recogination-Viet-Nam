@@ -3,8 +3,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 
-#samplerate, data1 = wavfile.read("input/voice-commands/test/.wav")
-#samplerate, data1 = wavfile.read("input/train_split/đi tới/ditoi_tue_01.wav")
 samplerate, data1 = wavfile.read("test.wav")
 
 times = np.arange(len(data1))/float(samplerate)

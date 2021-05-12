@@ -110,7 +110,7 @@ def Detect_Split_Voice(E):
         E = E / maxE  # chuẩn hóa về 0 -> 1 
         draw = []  # mảng đánh dấy vị trí bắt đầu và kết thúc của tiếng nói
         new_list = [] # mảng lưu trữ khung tín hiệu tiếng nói
-        nguong_y = 0.1 # ngưỡng chọn 
+        nguong_y = 0.05 # ngưỡng chọn 
         check = 0 # kiểm tra xem là vị trí bắt đầu hay kết thúc
         for m in range(0,len(E) - 3) : 
             if(E[m] > nguong_y and check==0) :
