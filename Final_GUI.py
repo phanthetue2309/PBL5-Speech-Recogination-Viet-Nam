@@ -14,9 +14,10 @@ from scipy.io import wavfile
 
 warnings.filterwarnings("ignore")
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-shape = 24000
+# shape = 24000
+shape = 31951
 classes = ['dừng lại','quay phải','quay trái','sang phải','sang trái','đi lui','đi tới']
-model=load_model('best_model_hdf5/best_model_0.hdf5')
+model=load_model('best_model_hdf5/best_model_5.hdf5')
 
 # device's IP address
 SERVER_HOST = "0.0.0.0"
@@ -148,7 +149,8 @@ class Ui_Dialog(object):
 
             if (len(draw) >= 3 ): # nếu phát hiện được số lượng vị trí khung có tiếng nói thì thực thi
                 self.labelStatus.setText("VOICE DETECT")            
-                self.predict(data[4000:28000]) 
+                # self.predict(data[4000:28000]) 
+                self.predict(data)
             else:
                 self.labelStatus.setText("NO VOICE DETECT")
 
@@ -180,7 +182,8 @@ class Ui_Dialog(object):
         samples, sample_rate = librosa.load(name_file, sr = 44100)
         samples = librosa.resample(samples, sample_rate, 8000)
         #self.Detect_Voice(E,samples)
-        self.predict(samples[4000:28000])
+        # self.predict(samples[4000:28000])
+        self.predict(samples)
 
     def predict(self,audio):
         prob=model.predict(audio.reshape(1,shape,1))  
@@ -193,7 +196,8 @@ class Ui_Dialog(object):
         name_file = "test.wav"  
         samples, sample_rate = librosa.load(name_file, sr = 44100)
         samples = librosa.resample(samples, sample_rate, 8000)
-        file_predict = self.predict(samples[4000:28000])
+        # file_predict = self.predict(samples[4000:28000])
+        file_predict = self.predict(samples)
         self.lineFilePredict.setText(file_predict)   
 
     def setupUi(self, Dialog):
