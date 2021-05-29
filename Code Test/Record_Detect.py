@@ -65,18 +65,8 @@ def Record(name_file):
 
 Record(name_file)
 
-#samplerate, data1 = wavfile.read("input/voice-commands/test/.wav")
-samplerate, data1 = wavfile.read(name_file)
-times = np.arange(len(data1))/float(samplerate)
-
-# Nếu có 2 kênh trong đoạn âm thanh thì chuyển 2 kênh về thành 1 kênh
-data = []
-if len(data1.shape) == 2:
-    if data1.shape[1] != 1:
-        for i in range(len(data1)):
-            data.append(data1[i][1])
-else:
-    data = data1
+samplerate, data = wavfile.read(name_file)
+times = np.arange(len(data))/float(samplerate)
 
 # Chia đoạn âm thanh thành các Frames
 frames = (float)((len(data) / samplerate))
@@ -110,6 +100,7 @@ def DetectVoice(E, data):
     '''
     nguong_E = 5*100000000  # 5x10^8 ngưỡng mặc định ứng với mic ghi âm
     maxE = max(E)
+    print(maxE)
     if maxE < nguong_E:
         print("NO VOICE")
     else:
