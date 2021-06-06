@@ -6,7 +6,7 @@ trên Google Colab hoặc Keras để run.
 ## Tổng quan mô hình
 Nếu sử dụng RASP :
 
-![IoT](image/IoT old.png)
+![Ioldold](image/IoT-old.png)
 
 Nếu không sử dụng RASP :
 ![IoT](image/IoT.png)
@@ -18,7 +18,7 @@ Code Test/Record_Detect.py
 
 - Sau khi run file và ghi âm nếu phát hiện giọng nói sẽ xuất ra hình ảnh như sau : 
 ![IoT](image/Voice_detect_python.png)
-## Mình phát hiện giọng nói 
+## Mô hình phát hiện giọng nói 
 ![IoT](image/Voice_Detection_2.png)
 
 ### Chi tiết phần VAD ( Voice activity Detection)
