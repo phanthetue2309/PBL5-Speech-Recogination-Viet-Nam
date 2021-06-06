@@ -30,6 +30,8 @@ Code Test/Record_Detect.py
   + Speech Recognition Colab/Speech_Recogination_Ver_Final.ipynb
       + File .ipynb này sẽ chạy trên Colab hoặc activate anaconda trên máy để chạy.
   + input/train_split (dataset để train)
+      + Ở đây chỉ train với những từ như quay trái, quay phải, đi tới, đi lui, sang phải, sang trái, dừng lại
+      + Nếu muốn train thêm chỉ cần tạo thư mục chứa tất cả từ giống nhau bỏ vào là được  
   
 - Sau khi quá trình huấn luyện hoàn tất sẽ trích xuất ra file .hdf5
 ## Mô hình huấn luyện 
