@@ -1,4 +1,4 @@
-# PBL5-Speech-Recogination-Viet-Nam
+# PBL5-Speech-Recognition-Viet-Nam
 
 Trong đề tài này sử dụng mô hình Deep-Learning CNN vì vậy để run code phải activate được GPU trên laptop hoặc đưa code lên
 trên Google Colab hoặc Keras để run.
