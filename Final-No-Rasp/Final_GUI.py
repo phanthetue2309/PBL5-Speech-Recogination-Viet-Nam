@@ -17,13 +17,13 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 shape = 31951
 classes = ['dừng lại', 'quay phải', 'quay trái',
            'sang phải', 'sang trái', 'đi lui', 'đi tới']
-model = load_model('best_model_hdf5/best_model_5.hdf5')
+model = load_model('../best_model_hdf5/best_model_5.hdf5')
 
 
 class Ui_Dialog(object):
     def Record_File(self, name_file="test.wav"):
         '''
-        Hàm Ghi âm giọng nói. 
+        Hàm Ghi âm giọng nói.
         '''
         form_1 = pyaudio.paInt16  # 16-bit resolution
         chans = 1  # 1 channel
@@ -59,7 +59,7 @@ class Ui_Dialog(object):
 
     def Calculate_Energy(self, data, frames, samplerate=44100):
         '''
-        Hàm tính toán năng lượng 
+        Hàm tính toán năng lượng
         '''
         data0 = [i**2 for i in data]
         E = np.empty(1, dtype=np.int64)
@@ -81,7 +81,7 @@ class Ui_Dialog(object):
         maxE = max(E)
         E = E / maxE  # chuẩn hóa về 0 -> 1
         draw = []  # mảng đánh dấy vị trí bắt đầu và kết thúc của tiếng nói
-        nguong_y = 0.05  # ngưỡng chọn
+        nguong_y = 0.08  # ngưỡng chọn
         check = 0  # kiểm tra xem là vị trí bắt đầu hay kết thúc
         for m in range(0, len(E) - 3):
             if(E[m] > nguong_y and check == 0):
@@ -104,10 +104,10 @@ class Ui_Dialog(object):
                     check = 0   # kết thúc 1 chữ
 
         # nếu phát hiện được số lượng vị trí khung có tiếng nói thì thực thi
-        if (len(draw) >= 2 and len(draw) <= 4):
+        if (len(draw) >= 2 and len(draw) <= 7):
             self.labelStatus.setText("VOICE DETECT")
             self.PredictFile()
-        elif (len(draw) > 4):
+        elif (len(draw) > 7):
             self.labelStatus.setText("NO COMMAND DETECT")
             QtCore.QCoreApplication.processEvents()
             self.lineFilePredict.setText("")
@@ -147,12 +147,11 @@ class Ui_Dialog(object):
 
     def predict(self, audio):
         prob = model.predict(audio.reshape(1, shape, 1))
-        print(prob[0])
-        if np.argmax(prob[0]) < 0.7:
-            index = 10
-            self.lineFilePredict.setText("NO COMMAND DETECT")
+        index = self.conver()
+        if index == 10:
+            index = np.argmax(prob[0])
+            self.lineFilePredict.setText(classes[index])
             return index
-        index = np.argmax(prob[0])
         self.lineFilePredict.setText(classes[index])
         return index
 
@@ -193,6 +192,35 @@ class Ui_Dialog(object):
             self.Image.setPixmap(QtGui.QPixmap(
                 "advantages-of-speech-recognition.jpg"))
             QtCore.QCoreApplication.processEvents()
+
+    def conver(self):
+        import speech_recognition as sr
+        r = sr.Recognizer()
+        text = ''
+        with sr.AudioFile('test.wav') as source:
+            try:
+                audio = r.listen(source)
+                text = r.recognize_google(audio, language="vi-VN")
+            except:
+                index = 10
+                return index
+        if text == 'đi tới':
+            index = 6
+        elif text == 'đi lui':
+            index = 5
+        elif text == 'sang trái' or text == 'sáng trái':
+            index = 4
+        elif text == 'sang phải' or text == 'sáng phải':
+            index = 3
+        elif text == 'quay trái':
+            index = 2
+        elif text == 'quay phải' or text == 'vậy phải' or text == 'wi-fi':
+            index = 1
+        elif text == 'dừng lại':
+            index = 0
+        else:
+            index = 10
+        return index
 
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
