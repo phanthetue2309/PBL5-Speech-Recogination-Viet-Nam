@@ -6,7 +6,7 @@ trên Google Colab hoặc Keras để run.
 ## Tổng quan mô hình
 Nếu sử dụng RASP :
 
-![Ioldold](image/IoT-old.png)
+![IIold)old](image/IoT_old.png)
 
 Nếu không sử dụng RASP :
 ![IoT](image/IoT.png)
